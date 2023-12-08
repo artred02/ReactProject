@@ -1,70 +1,68 @@
-# Getting Started with Create React App
+# TP : Convertisseur de devises
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Créez 2 routes / et /404
 
-## Available Scripts
+- Ajoutez le router sur l'application
+- Il y a deux composants de pages à créer (convertisseur et 404)
+- pour le contenu de la page 404 vous êtes libres (soyez créatifs :))
+- le contenu HTML de la page du convertisseur est présent dans App.
+- toutes les routes autres que '/' doivent aboutir à la page 404
 
-In the project directory, you can run:
+## Développez le convertisseur
 
-### `npm start`
+### Organisation
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Découper et organisez l'application de façon optimale, créer des composants autant que nécessaire.
+(créer des composants réutilisables comme le select par exemple)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Les champs From et To proposeront uniquement les listes des devises déjà placées dans le template fourni (EUR, CHF, GBP et USD)
 
-### `npm test`
+- Le champ de saisie Amount :
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+  - devra gérer le cas où l'utilisateur saisi un "0" en premier pour le forcer en number (ex : 0458 => 458)
+  - devra se mettre en erreur si des caractères autre des chiffres sont saisis (ajoute la classe "invalid" sur le champ)
+  - devra se mettre en valide si des caractères autre des chiffres sont saisis (ajoute la classe "valid"  sur le champ)
+    pour plus d'info sur les classes de validation : https://materializecss.com/text-inputs.html
 
-### `npm run build`
+  > Aide : Il se peut que vous ayez un bug d'affichage sur le champ 
+  > Vous pouvez utiliser cette solution pour le résoudre :
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+  ```javascript
+  useEffect(() => {
+    M.updateTextFields();
+  }, []);
+  ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### API de conversion
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Pour effectuer la conversion pour pouvez utiliser cette route d'API : https://react-starter-api.vercel.app/api/convert/:base_currency
+  ":base_currency" sera votre paramètre de la devise de référence et l'API renverra un tableau de conversion pour les autres devises.
 
-### `npm run eject`
+> Observer la format de la réponse, le montant devra être converti avec le bon coefficient de conversion
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+C'est la valeur du champ From qui sera votre paramètre d'url
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- L'appel au web service API ne devra se faire que si :
+  - le montant saisi est différent de zéro
+  - chaque fois que l'on modifie un des champs (From, To ou Amount)
+  - pas d'appel si From et To sont égaux, si il y a un changement sur champ Amount, celui-ci sera affiché dans Result sans conversion
+  - pas d'appel en cas d'erreur sur le champ, on affichera 0 dans Result
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+> Aide : Vous aurez probablement besoin de comparer l'état courant de l'état précédent de ces champs : https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Pour vous aider, je vous ai fourni un hook qui permet d'obtenir l'état précédent, il s'utilise de la façon suivante :
 
-## Learn More
+  ```javascript
+const prevStateForm = usePrevious(stateForm);
+```
+De cette manière, vous pourrez conditionner l'appel de votre fetch selon les règles imposées.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+(ne pas oublier de l'importer)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Affichage du résultat
 
-### Code Splitting
+- le résultat de la conversion devra s'afficher devant le libellé "Result :"
+- Affichez le spinner (fourni) pendant l'appel de service (toujours en face de "Result :")
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+J'ai écrit des scenarios de tests que vous devez respecter pour valider le fonctionnel attendu (cf fichier EXAMPLE_MAPPING.md)
