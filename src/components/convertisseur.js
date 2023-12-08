@@ -4,40 +4,34 @@ import App from "../App";
 
 const Convertisseur = () => {
 
-    const [res, setRes] = React.useState(0);
     const [devise1, setDevise1] = React.useState("EUR");
-    const [devise2, setDevise2] = React.useState("EUR");
-    const [changeDevise, setChangeDevise] = React.useState({isLoading: false});
+    const [isLoading, setLoading] = React.useState(false);
+    const [tabDevise, setTabDevise] = React.useState({"EUR": 0, "CHF": 0, "GBP": 0, "USD": 0});
+    
+	const [resAmount, setResAmount] = React.useState(0);
 
     const fetchDevise = async (devise) => {
-        setChangeDevise({ isLoading: true });
+        setLoading(true);
         const result = await fetch("https://react-starter-api.vercel.app/api/convert/"+devise);
         const resultJson = await result.json();
-        console.log(resultJson);
-        setChangeDevise({ isLoading: false, data: resultJson.data });
+        setTabDevise({ "EUR": resultJson.data.EUR, "CHF": resultJson.data.CHF, "GBP": resultJson.data.GBP, "USD": resultJson.data.USD })
+        setLoading(false);
     };
 
-    fetchDevise(devise1);
+    React.useEffect(() => {
+        fetchDevise(devise1);
+    }, []);
 
-    const handleAmount = (value) => {
-        setRes(value);
-    }
-
-    const changeFirstDevise = (devise) => {
-        setDevise1(devise);
+    const changeDevise1 = (devise) => {
         fetchDevise(devise);
-        if(!changeDevise.isLoading) {
-            console.log(changeDevise.data);
-        }
+        setDevise1(devise);
+        setResAmount(0);
+        document.getElementById("amount").value = 0;
     }
 
     return (
         <>
-        <div>
-            <App handleAmount={handleAmount} resAmount={res} setDevise1={changeFirstDevise} setDevise2={setDevise2} isLoading={changeDevise.isLoading} />
-        </div>
-        <input type="text" value={devise1} />
-        <input type="text" value={devise2} />
+            <App setDevise1={changeDevise1} isLoading={isLoading} tabDevise={tabDevise} resAmount={resAmount} setResAmount={setResAmount} />
         </>
     );
 }
