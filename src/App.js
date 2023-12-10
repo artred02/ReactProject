@@ -7,7 +7,6 @@ import { useEffect } from "react";
 
 import Spinner from "./components/Spinner/index";
 import Header from "./components/header";
-import { tab } from "@testing-library/user-event/dist/tab";
 
 const Devise = ({setDevise, name}) => {
 	return (
@@ -40,19 +39,13 @@ const Result = (resAmount, isLoading) => {
 const Amount = ({isLoading, tabDevise, resAmount, setResAmount, devise2}) => {
 	const [valid, setValid] = React.useState("first");
 
-	console.log(tabDevise[devise2].value);
-
 	React.useEffect(() => {
 		setResAmount(document.getElementById("amount").value * tabDevise[devise2].value);
-	}, [devise2]);
+	}, [devise2, tabDevise[devise2].value]);
 
 	React.useEffect(() => {
 		setResAmount(0);
 	}, []);
-
-	React.useEffect(() => {
-		setValid("none");
-	}, [tabDevise]);
 
 	React.useEffect(() => {
 		if(valid !== "first") {

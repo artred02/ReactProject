@@ -23,10 +23,8 @@ const Convertisseur = () => {
     }, []);
 
     const changeDevise1 = (devise) => {
-        fetchDevise(devise);
         setDevise1(devise);
-        setResAmount(0);
-        document.getElementById("amount").value = 0;
+        fetchDevise(devise);
     }
 
     return (
